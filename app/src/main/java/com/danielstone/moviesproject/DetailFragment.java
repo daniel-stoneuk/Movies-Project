@@ -4,6 +4,8 @@ package com.danielstone.moviesproject;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.danielstone.moviesproject.data.MoviesContract;
@@ -38,7 +41,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             MoviesContract.MovieEntry.COLUMN_MOVIE_ID,
             MoviesContract.MovieEntry.COLUMN_TITLE,
             MoviesContract.MovieEntry.COLUMN_POSTER_PATH,
-            MoviesContract.MovieEntry.COLUMN_BACKDROP_PATH
+            MoviesContract.MovieEntry.COLUMN_BACKDROP_PATH,
+            MoviesContract.MovieEntry.COLUMN_OVERVIEW,
+            MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+            MoviesContract.MovieEntry.COLUMN_VOTE_COUNT
     };
 
     //indicies tied to MOVIE_COLUMNS
@@ -47,6 +53,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final int COL_MOVIE_TITLE = 2;
     public static final int COL_MOVIE_POSTER_PATH = 3;
     public static final int COL_MOVIE_BACKDROP_PATH = 4;
+    public static final int COL_MOVIE_OVERVIEW = 5;
+    public static final int COL_VOTE_AVERAGE = 6;
+    public static final int COL_VOTE_COUNT = 7;
+
+    private TextView descriptionTextView;
+    private TextView averageVoteTextView;
+    private TextView totalVotesTextView;
+    private ImageView posterImageView;
+
 
 
     public DetailFragment() {
@@ -74,7 +89,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail_activity, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_detail_activity, container, false);
+
+        descriptionTextView = (TextView) rootView.findViewById(R.id.movie_description);
+        posterImageView = (ImageView) rootView.findViewById(R.id.posterImageView);
+        averageVoteTextView = (TextView) rootView.findViewById(R.id.averageVoteTextView);
+        totalVotesTextView = (TextView) rootView.findViewById(R.id.totalVotesTextView);
+
+        return rootView;
     }
 
     @Override
@@ -110,6 +132,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             String url = "http://image.tmdb.org/t/p/w780" + data.getString(COL_MOVIE_BACKDROP_PATH);
             ImageView imgToolbar = (ImageView) activity.findViewById(R.id.imgToolbar);
             Glide.with(getActivity()).load(url).fitCenter().crossFade().into(imgToolbar);
+
+            url = "http://image.tmdb.org/t/p/w500" + data.getString(COL_MOVIE_POSTER_PATH);
+            Glide.with(getActivity()).load(url).placeholder(new ColorDrawable(Color.parseColor("#7986CB"))).fitCenter().crossFade().into(posterImageView);
+
+            String movieDescription = data.getString(COL_MOVIE_OVERVIEW);
+            descriptionTextView.setText(movieDescription);
+
+            double averageVotes = data.getDouble(COL_VOTE_AVERAGE);
+            averageVoteTextView.setText(Double.toString(averageVotes));
+
+            int totalVotes = data.getInt(COL_VOTE_COUNT);
+            totalVotesTextView.setText(Integer.toString(totalVotes));
         }
     }
 

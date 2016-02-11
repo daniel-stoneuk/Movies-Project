@@ -60,8 +60,8 @@ public class MoviesProvider extends ContentProvider {
 
         return sMovieByMovieIdQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
-                sMovieIdSelection,
-                new String[] {Long.toString(movieId)},
+                sMovieIdSelection, // Selection
+                new String[] {Long.toString(movieId)}, // Selection args
                 null,
                 null,
                 sortOrder
@@ -87,10 +87,6 @@ public class MoviesProvider extends ContentProvider {
                     retCursor = getMovieByMovieId(uri, projection, sortOrder);
                 } else retCursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.MovieEntry.TABLE_NAME, projection, selection ,selectionArgs, null, null, sortOrder);
-                break;
-            }
-            case MOVIE_WITH_MOVIE_ID: {
-                retCursor = getMovieByMovieId(uri, projection, sortOrder);
                 break;
             }
             default:
